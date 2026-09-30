@@ -1,0 +1,16 @@
+model_list:
+  - model_name: customer-service-agent
+    litellm_params:
+      model: ollama/llama3.1
+      api_base: http://ollama:11434
+
+litellm_settings:
+  callbacks: ["prometheus"]
+  request_timeout: 30
+  max_tokens: 1024
+
+guardrails:
+  - guardrail_name: "enterprise-threat-firewall"
+    guardrail: custom_guardrail.EnterpriseThreatGuardrail
+    mode: "post_call"
+    default_on: true
