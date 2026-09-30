@@ -1,16 +1,5 @@
-version: '3.8'
-
-services:
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama
-    ports:
-      - "11434:11434"
-    volumes:
-      - ollama_storage:/root/.ollama
-
-  litellm-proxy:
-    image: ghcr.io/berriai/litellm:main-v1.0.0
+litellm-proxy:
+    image: ghcr.io/berriai/litellm:main-latest
     container_name: litellm_proxy
     ports:
       - "4000:4000"
@@ -22,29 +11,6 @@ services:
       - PROMETHEUS_PORT=4000
     depends_on:
       - ollama
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    volumes:
-      - grafana_storage:/var/lib/grafana
-    depends_on:
-      - prometheus
-
-volumes:
   ollama_storage:
     driver: local
   prometheus_data:
