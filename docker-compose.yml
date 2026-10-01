@@ -1,14 +1,63 @@
-FROM ghcr.io/berriai/litellm:main-latest
+version: '3.8'
 
-WORKDIR /app
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_storage:/root/.ollama
+    networks:
+      - firewall_network
 
-# Install custom security scanning dependencies
-RUN pip install --no-cache-dir llm-guard torch transformers
+  litellm-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: litellm_proxy
+    ports:
+      - "4000:4000"
+    environment:
+      - PROMETHEUS_PORT=4000
+    depends_on:
+      - ollama
+    networks:
+      - firewall_network
 
-# Copy configuration and guardrail script into the image
-COPY litellm_config.yaml /app/config.yaml
-COPY custom_guardrail.py /app/custom_guardrail.py
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    networks:
+      - firewall_network
 
-EXPOSE 4000
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_storage:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - firewall_network
 
-CMD ["--config", "/app/config.yaml", "--port", "4000"]
+volumes:
+  ollama_storage:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_storage:
+    driver: local
+
+networks:
+  firewall_network:
+    driver: bridge
