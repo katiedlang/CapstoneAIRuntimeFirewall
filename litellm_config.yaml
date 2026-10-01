@@ -1,11 +1,8 @@
- model_list:
+model_list:
   - model_name: ollama/llama3.1
     litellm_params:
       model: ollama/llama3.1
       api_base: http://ollama:11434
 
-guardrails:
-  - guardrail_name: custom_guardrail
-    litellm_params:
-      guardrail: custom_guardrail.py
-      mode: pre_call
+litellm_settings:
+  callbacks: ["custom_guardrail.py"]
