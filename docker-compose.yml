@@ -11,13 +11,17 @@ services:
     networks:
       - firewall_network
 
-  litellm-proxy:
+litellm-proxy:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: litellm_proxy
     ports:
       - "4000:4000"
+    volumes:
+      - ./litellm_config.yaml:/app/config.yaml:ro
+      - ./custom_guardrail.py:/app/custom_guardrail.py:ro
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
     environment:
       - PROMETHEUS_PORT=4000
     depends_on:
