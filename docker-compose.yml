@@ -1,19 +1,14 @@
-litellm-proxy:
-    image: ghcr.io/berriai/litellm:main-latest
-    container_name: litellm_proxy
-    ports:
-      - "4000:4000"
-    volumes:
-      - ./litellm_config.yaml:/app/config.yaml:ro
-      - ./custom_guardrail.py:/app/custom_guardrail.py:ro
-    command: ["--config", "/app/config.yaml", "--port", "4000"]
-    environment:
-      - PROMETHEUS_PORT=4000
-    depends_on:
-      - ollama
-  ollama_storage:
-    driver: local
-  prometheus_data:
-    driver: local
-  grafana_storage:
-    driver: local
+FROM ghcr.io/berriai/litellm:main-latest
+
+WORKDIR /app
+
+# Install custom security scanning dependencies
+RUN pip install --no-cache-dir llm-guard torch transformers
+
+# Copy configuration and guardrail script into the image
+COPY litellm_config.yaml /app/config.yaml
+COPY custom_guardrail.py /app/custom_guardrail.py
+
+EXPOSE 4000
+
+CMD ["--config", "/app/config.yaml", "--port", "4000"]
