@@ -1,8 +1,0 @@
-global:
-  scrape_interval: 5s
-
-scrape_configs:
-  - job_name: 'litellm_firewall'
-    metrics_path: '/metrics'
-    static_configs:
-      - targets: ['litellm-proxy:4000']
