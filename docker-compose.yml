@@ -11,7 +11,7 @@ services:
     networks:
       - firewall_network
 
-litellm-proxy:
+  litellm-proxy:
     build:
       context: .
       dockerfile: Dockerfile
