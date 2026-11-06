@@ -13,3 +13,7 @@ LLM Guard code, examples, documentation:
 
 Lite LLM implementations:
 - https://docs.litellm.ai/docs/
+
+Grafana (Dashboard)
+- https://grafana.com/grafana/download?edition=oss&platform=windows (download page)
+- http://localhost:3000/login (dashboard login for when we get it connected; must create account and set up prometheus connection)
