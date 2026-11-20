@@ -1,9 +1,11 @@
 FROM ghcr.io/berriai/litellm:main-latest
 
+COPY --from=ghcr.io/astral-sh/uv:0.10.9 /uv /usr/local/bin/uv
+
 WORKDIR /app
 
 # Install dependencies
-RUN pip install --no-cache-dir llm-guard torch transformers
+RUN uv pip install --python /app/.venv/bin/python llm-guard torch transformers
 
 # Pre-download default Hugging Face models for llm-guard so it doesn't crash on the first request
 RUN python -c "from llm_guard.input_scanners import PromptInjection; PromptInjection()"
