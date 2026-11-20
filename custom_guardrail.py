@@ -1,6 +1,9 @@
 # run scanning tasks without blocking other async operations
 import asyncio
 
+# uses regex to detect social security number patterns
+import re
+
 # import LiteLLM's class for creating custom guardrails
 from litellm.integrations.custom_guardrail import CustomGuardrail
 
@@ -148,7 +151,9 @@ class EnterpriseThreatGuardrail(CustomGuardrail):
             failed_scanners = []
 
         # block if any other scanner detected a threat
+        # log blocked requests and the scanners that detected them
         if failed_scanners:
+            print("SECURITY EVENT: INPUT BLOCKED - " + ", ".join(failed_scanners), flush=True)
             raise Exception(
                 "Security Alert: Input blocked by "
                 + ", ".join(failed_scanners)
@@ -161,6 +166,10 @@ class EnterpriseThreatGuardrail(CustomGuardrail):
                 message["content"] = sanitized_prompt
 
                 break
+
+        # return request so it can continue to the AI
+        # log when a request passes the input scanners
+        print("SECURITY EVENT: INPUT ALLOWED", flush=True)
 
         # return request so it can continue to the AI
         return data
@@ -291,10 +300,22 @@ class EnterpriseThreatGuardrail(CustomGuardrail):
                 for name, valid in results_valid.items()
                 if not valid
             ]
+                
+            # check for SSN patterns that the sensitive scanner might miss
+            ssn_pattern = r"\b(?!000|666|9\d\d)\d{3}-(?!00)\d{2}-(?!0000)\d{4}\b"
 
-            # block the response if any scanner detects sensitive info
+            if re.search(ssn_pattern, output_text):
+                failed_scanners.append("SSNPattern")
+            
+            # block and log responses containing sensitive info
             if failed_scanners:
-                sanitized_output = ("Security Alert: Response blocked because sensitive information was detected.")
+                print("SECURITY EVENT: OUTPUT BLOCKED - " + ", ".join(failed_scanners), flush=True)
+                sanitized_output = (
+                    "Security Alert: Response blocked because "
+                    "sensitive information was detected."
+                )
+            else:
+                print("SECURITY EVENT: OUTPUT ALLOWED", flush=True)
                 
             # replace response with sanitized output
             # handle responses stored as objects or dictionaries
