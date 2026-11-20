@@ -145,17 +145,38 @@ These statements show allowed or blocked requests and scanner reasons. Scanner l
 
 A `307` redirect from `/metrics` to `/metrics/` is normal. Confirm in Prometheus that the relevant target is being scraped before relying on a dashboard.
 
-### Grafana (optional)
+### Grafana Dashboard Setup (optional)
 
-If Grafana is installed directly on Windows, open <http://localhost:3000> and configure **Connections → Data sources → Prometheus** with:
+This project includes a Grafana dashboard for monitoring the AI Agent Firewall.
 
-```text
-http://localhost:9090
+### Importing the Dashboard
+
+1. Download `firewall_dashboard.json` from the GitHub repository.
+2. Start Docker Desktop and run:
+   ```powershell
+   docker compose up -d
+   ```
+3. Open Grafana at `http://localhost:3000` (or the port configured for Grafana).
+4. Go to **Connections → Data sources** and add Prometheus.
+5. Set the Prometheus URL:
+   - Windows Grafana: `http://localhost:9090`
+   - Docker Grafana: `http://prometheus:9090`
+6. Click **Save & test** to verify the connection.
+7. Go to **Dashboards → New → Import**.
+8. Upload `firewall_dashboard.json`.
+9. Select the Prometheus data source and click **Import**.
+
+### Viewing Metrics
+
+Run the security tests to generate activity:
+
+```powershell
+python test_attack.py
 ```
 
-Click **Save & test**. If instead using Grafana within the Docker Compose network, its Prometheus data-source URL is usually `http://prometheus:9090`.
+Refresh the dashboard to view firewall status, guardrail activity, errors, and processing times.
 
-If port `3000` is already in use by Windows Grafana, either use that installation or change the **host-side** Grafana port mapping in `docker-compose.yml` from `3000:3000` to `3001:3000`, then open <http://localhost:3001>.
+**Note:** The dashboard JSON contains the panel configurations, not saved monitoring data. Each user must connect Grafana to a running Prometheus instance.
 
 ## 5. Troubleshooting
 
