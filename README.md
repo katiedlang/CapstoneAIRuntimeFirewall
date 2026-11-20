@@ -10,6 +10,9 @@ LLM Guard code, examples, documentation:
 - https://therizwan.github.io/llm-guard/docs/guards/
 - https://github.com/protectai/llm-guard/blob/main/docs/get_started/quickstart.md
 
+RegEx Search
+- https://www.w3schools.com/python/python_regex.asp 
+
 Lite LLM implementations:
 - https://docs.litellm.ai/docs/
 
