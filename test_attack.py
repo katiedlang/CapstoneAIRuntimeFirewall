@@ -3,7 +3,7 @@ import time # record response time
 import json # save test results to a file for the sprint doc
 
 # LiteLLM endpoint
-URL = "http://localhost:4000/v1/chat/completions"
+URL = "http://litellm-proxy:4000/v1/chat/completions"
 
 # Tests normal and malicious prompts - includes whether it should be blocked or not
 TESTS = [

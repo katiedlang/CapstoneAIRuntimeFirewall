@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  firewall-tests:
+    image: python:3.12-slim
+    working_dir: /app
+    volumes:
+      - ./test_attack.py:/app/test_attack.py:ro
+    command: >
+      sh -c "pip install requests &&
+             python test_attack.py"
+    networks:
+      - firewall_network
+
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
