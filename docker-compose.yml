@@ -24,6 +24,7 @@ services:
     command: ["--config", "/app/config.yaml", "--port", "4000"]
     environment:
       - PROMETHEUS_PORT=4000
+      - LITELLM_DANGEROUSLY_PERMIT_WEAK_OR_UNSET_MASTER_KEY=true
     depends_on:
       - ollama
     networks:
